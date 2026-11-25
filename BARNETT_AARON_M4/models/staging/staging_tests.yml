@@ -25,7 +25,7 @@ models:
   # -------------------------------------------------------------
   - name: raw_stocks
     tests:
-      - dbt_utils.unique_combination_of_columns:
+      - unique_combination_of_columns:
           combination_of_columns:
             - symbol
             - trade_date
@@ -45,7 +45,7 @@ models:
   # -------------------------------------------------------------
   - name: raw_weather
     tests:
-      - dbt_utils.unique_combination_of_columns:
+      - unique_combination_of_columns:
           combination_of_columns:
             - city
             - date

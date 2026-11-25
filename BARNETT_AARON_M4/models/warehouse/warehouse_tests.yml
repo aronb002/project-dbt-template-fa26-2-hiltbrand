@@ -1,0 +1,93 @@
+version: 2
+
+models:
+  # -------------------------------------------------------------
+  # DIM_DATE: Single-Column Primary Key (DATE_KEY)
+  # -------------------------------------------------------------
+  - name: dim_date
+    description: "Calendar date dimension generated with Snowflake GENERATOR."
+    columns:
+      - name: DATE_KEY
+        tests:
+          - not_null
+          - unique
+
+  # -------------------------------------------------------------
+  # DIM_SYMBOLS: Single-Column Primary Key (SYMBOL)
+  # -------------------------------------------------------------
+  - name: dim_symbols
+    description: "Stock ticker dimension with historical price and volume summaries."
+    columns:
+      - name: SYMBOL
+        tests:
+          - not_null
+          - unique
+
+  # -------------------------------------------------------------
+  # DIM_WEATHER_CITIES: Single-Column Primary Key (CITY)
+  # -------------------------------------------------------------
+  - name: dim_weather_cities
+    description: "Financial hub city dimension with historical climate norms."
+    columns:
+      - name: CITY
+        tests:
+          - not_null
+          - unique
+
+  # -------------------------------------------------------------
+  # DIM_NEWS: Single-Column PK (ID) + Two Foreign Keys (SYMBOL, DATE_KEY)
+  # -------------------------------------------------------------
+  - name: dim_news
+    description: "News article dimension with foreign keys to dim_symbols and dim_date."
+    columns:
+      - name: ID
+        tests:
+          - not_null
+          - unique
+      - name: SYMBOL
+        tests:
+          - not_null
+      - name: DATE_KEY
+        tests:
+          - not_null
+
+  # -------------------------------------------------------------
+  # FCT_DAILY_STOCKS: Composite Primary Key (SYMBOL + TRADE_DATE)
+  # -------------------------------------------------------------
+  - name: fct_daily_stocks
+    description: "Daily stock price fact table at SYMBOL + TRADE_DATE grain."
+    tests:
+      - unique_combination_of_columns:
+          combination_of_columns:
+            - SYMBOL
+            - TRADE_DATE
+    columns:
+      - name: SYMBOL
+        tests:
+          - not_null
+      - name: TRADE_DATE
+        tests:
+          - not_null
+      - name: DIRECTION
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['UP', 'DOWN', 'FLAT']
+
+  # -------------------------------------------------------------
+  # FCT_DAILY_WEATHER: Composite Primary Key (CITY + DATE)
+  # -------------------------------------------------------------
+  - name: fct_daily_weather
+    description: "Daily weather observation fact table at CITY + DATE grain."
+    tests:
+      - unique_combination_of_columns:
+          combination_of_columns:
+            - CITY
+            - DATE
+    columns:
+      - name: CITY
+        tests:
+          - not_null
+      - name: DATE
+        tests:
+          - not_null
